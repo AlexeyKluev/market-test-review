@@ -1,0 +1,9 @@
+/.idea
+/.vagrant
+/nbproject
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+.project
+/.vscode
