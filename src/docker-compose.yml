@@ -1,0 +1,34 @@
+version: "3.6"
+services:
+  #import
+  php-fpm:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: fpm
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+      - ./docker/php.ini:/usr/local/etc/php/conf.d/local.ini
+    links:
+      - nginx
+      - postgresql
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8002:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d/
+  # others
+  postgresql:
+    image: postgres:13
+    environment:
+      PGPASSWORD: secret # TODO: add .env
+      POSTGRES_DB: test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - ./docker/postgresql/data:/var/lib/postgresql/data

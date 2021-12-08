@@ -1,7 +1,7 @@
 <?php
 namespace App\SMS;
 
-class SomeSMSSenderClient
+class SomeSMSSenderClient implements SmsClient
 {
     public function send($phone, $body) {}
 }

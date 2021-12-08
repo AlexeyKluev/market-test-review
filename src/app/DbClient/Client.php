@@ -1,7 +1,7 @@
 <?php
+
 namespace App\DbClient;
 
-use App\Model\Order;
 
 class Client implements ClientInterface
 {
@@ -21,7 +21,8 @@ class Client implements ClientInterface
         $this->queryExecutor = $queryExecutor;
     }
 
-    private function createExecutorConfig() {
+    private function createExecutorConfig()
+    {
         return [
             "host" => $this->host,
             "login" => $this->login,
@@ -30,18 +31,21 @@ class Client implements ClientInterface
         ];
     }
 
-    public function getAmount($product_id)
+    /**
+     * @param $productId
+     * @return int
+     */
+    public function getAmount($productId): int
     {
-        $sql = "Select amount from products where id = " . $product_id;
+        $sql = "Select amount from products where id = " . $productId;
         $queryResult = $this->queryExecutor->query($sql, $this->createExecutorConfig());
 
-        foreach($queryResult as $row) {
-            return $row['amount'];
-        }
+        return $queryResult[0]['amount'] ?? 0;
     }
 
-    public function createOrder(array $order) {
-        $sql = "Insert into orders ('fio', 'phone', 'product_id') VALUES(" . $order["fio"] .", " . $order["phone"] . ", " . $order["product_id"] . ")";
+    public function createOrder(array $order): void
+    {
+        $sql = "Insert into orders ('fio', 'phone', 'product_id') VALUES(" . $order["fio"] . ", " . $order["phone"] . ", " . $order["product_id"] . ")";
         $this->queryExecutor->query($sql, $this->createExecutorConfig());
     }
 
@@ -50,7 +54,7 @@ class Client implements ClientInterface
         $sql = "select * from orders where 'phone' = " . $phone . " and 'product_id' = " . $productID . " order by id desc";
         $queryResult = $this->queryExecutor->query($sql, $this->createExecutorConfig());
 
-        foreach($queryResult as $row) {
+        foreach ($queryResult as $row) {
             return $row;
         }
     }

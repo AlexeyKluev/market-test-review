@@ -1,35 +1,20 @@
 <?php
 
+use App\Middleware\JsonBodyParserMiddleware;
+use App\RequestValidators\CheckoutRequestValidator;
 use App\Http\CheckoutController;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use DI\Bridge\Slim\Bridge;
 use Slim\Factory\AppFactory;
 
-require __DIR__ . '/../vendor/autoload.php';
+$container = require __DIR__ . '/../config/bootstrap.php';
 
-$app = AppFactory::create();
+AppFactory::setContainer($container);
 
-$config = [
-    'db_host' => 'localhost:6432',
-    'db_login' => 'postgres',
-    'db_password' => 'postgres',
-    'db_database' => 'checkout',
-];
+$app = Bridge::create($container);
 
-$app->get('/checkout', function (Request $request, Response $response, $args) use($config){
-    $checkoutController = new CheckoutController($config);
-    $body = $checkoutController->checkout();
-    switch ($body) {
-        case "ok":
-            $response
-                ->withStatus(200);
-            break;
-        default:
-            $response
-                ->withStatus(400);
-            break;
-    }
-    return $response;
-});
+$app->add(new JsonBodyParserMiddleware());
+$app->post('/checkout/{id:[0-9]+}', CheckoutController::class)
+    ->add(new CheckoutRequestValidator());
+
 
 $app->run();

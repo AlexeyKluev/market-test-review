@@ -3,9 +3,26 @@ namespace App\SMS;
 
 class Client
 {
-    public function sendOrderConfirm($orderId, $phone)
+    /**
+     * @var SmsClient
+     */
+    private SmsClient $smsClient;
+
+    /**
+     * @param SmsClient $smsClient
+     */
+    public function __construct(SmsClient $smsClient)
     {
-        $client = new SomeSMSSenderClient();
-        $client->send($phone, sprintf("Ваш заказ #%d успешно создан", $orderId));
+        $this->smsClient = $smsClient;
+    }
+
+    /**
+     * @param $orderId
+     * @param $phone
+     * @return void
+     */
+    public function sendOrderConfirm($orderId, $phone): void
+    {
+        $this->smsClient->send($phone, sprintf("Ваш заказ #%d успешно создан", $orderId));
     }
 }
